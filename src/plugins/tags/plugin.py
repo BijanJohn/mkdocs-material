@@ -61,8 +61,7 @@ class TagsPlugin(BasePlugin):
 
     # Hack: 2nd pass for tags index page
     def on_nav(self, nav, files, **kwargs):
-        file = self.config.get("tags_file")
-        if file:
+        if file := self.config.get("tags_file"):
             self.tags_file = files.get_file_from_path(file)
             if not self.tags_file:
                 log.error(f"Configuration error: {file} doesn't exist.")
@@ -92,7 +91,7 @@ class TagsPlugin(BasePlugin):
 
     # Render tags index
     def __render_tag_index(self, markdown):
-        if not "[TAGS]" in markdown:
+        if "[TAGS]" not in markdown:
             markdown += "\n[TAGS]"
 
         # Replace placeholder in Markdown with rendered tags index
@@ -112,10 +111,7 @@ class TagsPlugin(BasePlugin):
 
             # Ensure forward slashes, as we have to use the path of the source
             # file which contains the operating system's path separator.
-            content.append("- [{}]({})".format(
-                page.meta.get("title", page.title),
-                url
-            ))
+            content.append(f'- [{page.meta.get("title", page.title)}]({url})')
 
         # Return rendered tag links
         return "\n".join(content)
@@ -124,10 +120,9 @@ class TagsPlugin(BasePlugin):
     def __render_tag(self, tag):
         if not self.tags_file or not self.slugify:
             return dict(name = tag)
-        else:
-            url = self.tags_file.url
-            url += f"#{self.slugify(tag)}"
-            return dict(name = tag, url = url)
+        url = self.tags_file.url
+        url += f"#{self.slugify(tag)}"
+        return dict(name = tag, url = url)
 
 # -----------------------------------------------------------------------------
 # Data
